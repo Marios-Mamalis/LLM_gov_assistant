@@ -66,5 +66,4 @@ def RAG(question: str, chroma_dir: str, llm_name: str, embedding_model_name: str
         chain_type_kwargs={"prompt": QA_CHAIN_PROMPT}
     )
 
-    # TODO text only
-    return qa_chain({"query": question})
+    return qa_chain({"query": question})["result"]

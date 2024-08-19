@@ -26,8 +26,8 @@ query_questions = [
     "What is the relation between the EU Court of Justice and the national courts as regards the interpretation of GDPR provisions."
 ]
 chroma_dir = 'data/chroma'
-metadata_file_path = 'data/METADATA.csv'
-merged_metadata_file_path = 'data/METADATA_fa.csv'
+metadata_file_path = 'data/metadata.csv'
+merged_metadata_file_path = 'data/metadata_fa.csv'
 aq_documents_directory = 'data/aq_documents'
 rag_documents_directory = 'data/rag_documents'
 
@@ -39,7 +39,7 @@ rd.get_individual_documents(CELEX_uri_list=['https://eur-lex.europa.eu/legal-con
 # rag inference
 if not os.path.exists(chroma_dir):
     rag.load_to_chroma(
-        pdf_paths=[i for i in os.listdir(rag_documents_directory) if i.endswith('pdf')],
+        pdf_paths=[os.path.join(rag_documents_directory, i) for i in os.listdir(rag_documents_directory) if i.endswith('pdf')],
         chroma_dir=chroma_dir,
         llm_name='gpt-3.5-turbo-0125',
         embedding_model_name='text-embedding-3-large'

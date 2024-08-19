@@ -15,7 +15,7 @@ def get_documents_from_csv(original_metadata_file_path: str, documents_directory
     :return:
     """
     if os.path.exists(documents_directory):
-        raise 'Documents directory not empty'
+        raise Exception('Documents directory not empty')
     os.mkdir(documents_directory)
 
     df = pd.read_csv(original_metadata_file_path, na_values='Not available')

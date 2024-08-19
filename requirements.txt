@@ -1,0 +1,9 @@
+tiktoken==0.6.0
+langchain==0.1.12
+langchain_community==0.0.28
+python-dotenv==1.0.0
+pandas==1.5.3
+openai==0.27.8
+numpy==1.23.5
+langchain_experimental==0.0.54
+beautifulsoup4==4.12.2

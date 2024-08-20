@@ -16,6 +16,31 @@ authors:
   given-names: "Konstantinos"
   orcid: "https://orcid.org/0000-0002-4663-2113"
 title: "A Large Language Model Agent Based Legal Assistant for Governance Applications"
+version: 1.0.0
 doi: 10.1007/978-3-031-70274-7_18
 date-released: 2024-08-21
 url: "https://github.com/Marios-Mamalis/LLM_gov_assistant"
+preferred-citation:
+  type: conference-paper
+  authors:
+  - family-names: "Mamalis"
+    given-names: "Marios Evangelos"
+    orcid: "https://orcid.org/0009-0000-2680-0442"
+  - family-names: "Kalampokis"
+    given-names: "Evangelos"
+    orcid: "https://orcid.org/0000-0003-4416-8764"
+  - family-names: "Fitsilis"
+    given-names: "Fotios"
+    orcid: "https://orcid.org/0000-0003-1531-4128"
+  - family-names: "Theodorakopoulos"
+    given-names: "Georgios"
+  - family-names: "Tarabanis"
+    given-names: "Konstantinos"
+    orcid: "https://orcid.org/0000-0002-4663-2113"
+  doi: "10.1007/978-3-031-70274-7_18"
+  journal: "Electronic Government"
+  month: 8
+  start: 286 # First page number
+  end: 301 # Last page number
+  title: "A Large Language Model Agent Based Legal Assistant for Governance Applications"
+  year: 2024

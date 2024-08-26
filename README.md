@@ -6,7 +6,7 @@ This repository includes two systems: a basic retrieval-augmented generation pip
 
 RAG is implemented in a standard manner by using the initial query's embeddings to retrieve relevant documents for inclusion in the question prompt. The agent-based subsystem operates in three steps: first, it defines the information to be extracted from each document based on the user's query. Next, it extracts this information from each document, homogenizes the results, and stores them in a structured format. Finally, a Python agent is used to answer the user's queries based on the structured data. The system also supports integrating existing metadata alongside the extracted, structured data, and is optimized for batched inference. Both systems utilize OpenAI models for text and embeddings generation.
 
-The implemented systems are applied to a case involving documents from EUR-LEX, in `main.py`. 
+The case presented in the paper is contained in `main.py`. 
 
 ## Installation
 Requires Python 3.9

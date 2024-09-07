@@ -5,6 +5,10 @@ import os
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv, find_dotenv
 from langchain.text_splitter import CharacterTextSplitter
+import pandas as pd
+from langchain_experimental.agents import create_csv_agent
+from langchain_community.chat_models import ChatOpenAI
+import numpy as np
 
 import src.prompts as prompts
 import src.utils as utils
@@ -122,3 +126,59 @@ def refine_extracted_information(raw_answers: str, llm_name: str, llm_output_siz
     refined_answers = utils.merge_dicts(*refined_answers)
 
     return refined_answers
+
+
+def AQS(aq_questions: [str, ...], processed_metadata_dataframe: pd.DataFrame, information_inference_llm_name: str,
+        information_extractor_llm_name: str, information_extractor_llm_context_size: int, aq_documents_dir: str,
+        refiner_llm_name: str, refiner_llm_output_size: int,
+        merged_metadata_save_file_path: str, agent_llm_name: str
+        ) -> dict:
+    """
+    Wrapper for the complete agent-query system.
+    :param aq_questions: The list of questions.
+    :param processed_metadata_dataframe: The dataframe resulting from the processed portal csv. Must contain the
+    column `CELEX number_clean`.
+    :param information_inference_llm_name: The name of the OpenAI model to be used for infering the missing, needed
+    information.
+    :param information_extractor_llm_name: The name of the OpenAI model to be used for the extraction of the
+    information from the documents.
+    :param refiner_llm_name: The name of the OpenAI model to be used for the refinement of the extracted information.
+    :param agent_llm_name: The name of the OpenAI model to be used as the agent.
+    :param information_extractor_llm_context_size: The maximum tokens allowed as the context of the extractor model.
+    :param refiner_llm_output_size: The maximum tokens allowed as the output of the refiner model.
+    :param aq_documents_dir: The directory containing the documents to be used.
+    :param merged_metadata_save_file_path: The save location for the dataframe containing the extracted information.
+    :return: Returns a dictionary of the form {question: answer, ...}
+    """
+
+    if not os.path.exists(merged_metadata_save_file_path):
+        new_columns = infer_needed_information(
+            questions=aq_questions,
+            existing_columns=processed_metadata_dataframe.columns.tolist(),
+            llm_name=information_inference_llm_name
+        )
+
+        raw_answers = extract_necessary_information(
+            information_to_be_extracted=str(new_columns),
+            llm_name=information_extractor_llm_name,
+            model_context_size=information_extractor_llm_context_size,
+            document_names=[i for i in processed_metadata_dataframe['CELEX number_clean'].tolist()],
+            document_dir=aq_documents_dir
+        )
+
+        # save merged metadata (original + extracted)
+        refined_answers = refine_extracted_information(raw_answers=raw_answers, llm_name=refiner_llm_name, llm_output_size=refiner_llm_output_size)
+        extracted_information_dataframe = pd.DataFrame(refined_answers).T.replace('', np.NaN).reset_index().rename(columns={'index': 'CELEX number_clean'})
+        processed_metadata_dataframe.merge(extracted_information_dataframe, on='CELEX number_clean', how='outer').drop('CELEX number_clean', axis=1).to_csv(merged_metadata_save_file_path, index=False)
+
+    agent = create_csv_agent(
+        ChatOpenAI(model_name=agent_llm_name, temperature=0),
+        merged_metadata_save_file_path,
+        verbose=False
+    )
+
+    qa_dict = {}
+    for question in aq_questions:
+        qa_dict[question] = agent.invoke(question)
+
+    return qa_dict

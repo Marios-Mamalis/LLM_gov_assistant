@@ -39,7 +39,7 @@ def load_to_chroma(pdf_paths: [str, ...], chroma_dir: str, llm_name: str, embedd
     vectordb.persist()
 
 
-def RAG(question: str, chroma_dir: str, llm_name: str, embedding_model_name: str) -> str:
+def RAG_inference(question: str, chroma_dir: str, llm_name: str, embedding_model_name: str) -> str:
     """
     Performs Retrieval-Augmented Generation (RAG) to answer a question using a Chroma vector database.
     :param question: The input question to be answered.
@@ -67,3 +67,28 @@ def RAG(question: str, chroma_dir: str, llm_name: str, embedding_model_name: str
     )
 
     return qa_chain({"query": question})["result"]
+
+
+def RAG(llm_name: str, chroma_directory: str, pdf_paths: [str, ...], embedding_model_name: str, questions: [str, ...]) -> dict:
+    """
+    Wrapper for the complete RAG setup and inference.
+    :param llm_name: The name of the language model used for generating the answer.
+    :param chroma_directory: The directory where the Chroma database is stored.
+    :param pdf_paths: A list of paths to PDF files to be loaded.
+    :param embedding_model_name: The name of the model used to generate text embeddings.
+    :param questions: The user's questions.
+    :return: Returns a dictionary of the form {question: answer, ...}
+    """
+    if not os.path.exists(chroma_directory):
+        load_to_chroma(
+            pdf_paths=pdf_paths,
+            chroma_dir=chroma_directory,
+            llm_name=llm_name,
+            embedding_model_name=embedding_model_name
+        )
+
+    qa_dict = {}
+    for question in questions:
+        qa_dict[question] = RAG_inference(question=question, chroma_dir=chroma_directory, llm_name=llm_name, embedding_model_name=embedding_model_name)
+
+    return qa_dict
